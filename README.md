@@ -44,3 +44,30 @@ After this, make sure the neovim python package is installed from the correct pa
 ~~~
 /usr/bin/pip3 install --user neovim
 ~~~
+
+## Customize
+
+### Disable `termguicolors`
+
+To avoid nvim option `+set termguicolors` , set environment variable `NVIM_WRAPPER_DISABLE_TERMGUICOLORS`
+
+```
+env NVIM_WRAPPER_DISABLE_TERMGUICOLORS=1 nvim-wrapper
+```
+
+### Specify profile with visible name
+
+```
+nvim-wrapper --profile="Solarized Light"
+```
+
+### Customize desktop entry / Set Defaults.
+
+Put `neovim.desktop` to `~/.local/share/applications/neovim.desktop`
+
+If set `NVIM_WRAPPER_DISABLE_TERMGUICOLORS` and `--profile` , 
+edit `Exec` like below.
+
+```
+Exec=env NVIM_WRAPPER_DISABLE_TERMGUICOLORS=1 nvim-wrapper --profile="Solarized Light" %F
+```

@@ -6,6 +6,7 @@ import sys
 import os
 import subprocess
 import dbus
+from configparser import ConfigParser
 from time import time
 
 
@@ -56,7 +57,26 @@ def processArgv():
     for arg in argv:
         argParts = arg.split('=', 1)
         if argParts[0] in GTERM_PASSTHROUGH_OPTIONS:
-            gtermOptions.append(arg)
+            if not argParts[0] == "--profile":
+                gtermOptions.append(arg)
+                continue
+            # in case --profile
+            with open(os.devnull, 'wb') as fnull:
+                _process = subprocess.Popen(
+                    ['dconf', 'dump', '/org/gnome/terminal/legacy/profiles:/'],
+                    stdout=subprocess.PIPE,
+                    stderr=fnull,
+                )
+                _process.wait()
+                cfg = ConfigParser()
+                cfg.read_string(_process.stdout.read().decode())
+                for section in cfg.sections():
+                    visible_name = cfg.get(section, "visible-name", fallback="")
+                    visible_name = visible_name.strip("'")
+                    if argParts[1] == visible_name:
+                        gtermOptions.append("--profile={}".format(section.replace(":", "")))
+                        continue
+
         else:
             nvimOptions.append(arg)
 
@@ -67,8 +87,9 @@ def processArgv():
     # enable title by default
     nvimOptions.append("+set title")
 
-    # enable 24-bit color
-    nvimOptions.append("+set termguicolors")
+    if "NVIM_WRAPPER_DISABLE_TERMGUICOLORS" not in os.environ:
+        # enable 24-bit color
+        nvimOptions.append("+set termguicolors")
 
     return {
         'gterm': gtermOptions,
