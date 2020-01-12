@@ -3,7 +3,7 @@ Version=1.0
 Type=Application
 Name=Neovim (gnome-terminal)
 Icon=neovim
-Exec=nvim-wrapper %F
+Exec=env NVIM_WRAPPER_DISABLE_TERMGUICOLORS=y nvim-wrapper %F
 NoDisplay=false
 Categories=X-GNOME-Other;
 StartupNotify=false
