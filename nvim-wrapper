@@ -81,6 +81,8 @@ def processArgv():
         elif arg=='-f':
             gtermOptions.append('--wait')
         else:
+            if os.path.exists(arg):
+                arg = os.path.abspath(arg)
             nvimOptions.append(arg)
 
     # launch the wrapper in the current directory by default
